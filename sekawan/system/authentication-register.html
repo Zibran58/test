@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ZManagement</title>
+  <link rel="shortcut icon" type="image/png" href="./assets/images/logos/favicon.png" />
+  <link rel="stylesheet" href="./assets/css/styles.min.css" />
+  <link rel="stylesheet" href="./assets/css/animate.min.css" />
+  <style>
+    .file-input-wrapper {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+    }
+
+    .file-input-wrapper img {
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      object-fit: cover;
+    }
+
+    .file-input {
+      position: absolute;
+      top: 0;
+      left: 0;
+      font-size: 100px;
+      text-align: right;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .drop-area {
+      width: 100%;
+      height: 100%;
+      border: 2px dashed #ccc;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .drop-area.highlight {
+      border-color: #007bff;
+    }
+
+    .drop-area img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    .file-input-wrapper img[src="./assets/images/profile/bg.png"] {
+      width: 100px;
+      height: 100px;
+    }
+  </style>
+</head>
+
+<body>
+  <!--  Body Wrapper -->
+  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+  data-sidebar-position="fixed" data-header-position="fixed">
+  <div class="position-relative overflow-hidden radial-gradient min-vh-100 d-flex align-items-center justify-content-center">
+    <div class="d-flex align-items-center justify-content-center w-100">
+      <div class="row justify-content-center w-100">
+        <div class="col-md-8 col-lg-6 col-xxl-3">
+          <div class="card mb-0">
+            <div class="card-body">
+              <a href="./index.html" class="text-nowrap logo-img text-center d-block py-3 w-100">
+                <img src="./assets/images/logos/logo.png" width="180" alt="Logo Perusahaan">
+              </a>
+              <p class="text-center">Create account For New Driver </p>
+              <form action="" id="form-data" enctype="multipart/form-data">
+                <div class="mb-3">
+                  <label for="reg-fullname" class="form-label">Fullname</label>
+                  <input type="text" class="form-control" id="reg-fullname" name="reg-fullname"
+                  aria-describedby="textHelp">
+                </div>
+                <div class="mb-3">
+                  <label for="email" class="form-label">Email</label>
+                  <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp">
+                </div>
+                <div class="mb-4">
+                  <label for="password_rgs" class="form-label">Password</label>
+                  <input type="password" class="form-control" id="password_rgs" name="password_rgs">
+                  <label for="re_pass" class="form-label">Repeat Password</label>
+                  <input type="password" class="form-control" id="re_pass" name="re_pass">
+                </div>
+                <div class="mb-4">
+                  <label for="profile-pic" class="form-label">Profile Picture</label>
+                  <div class="file-input-wrapper drop-area">
+                    <img id="profile-pic-preview" src="./assets/images/profile/bg.png"
+                    alt="Upload Icon">
+                    <input type="file" id="profile-pic" class="file-input" name="profile-pic" accept="image/*">
+                  </div>
+                  <span id="klmt" class="ms-1 text-muted">(Klik Sekali Lagi Jika Ingin Mengubah Gambar)</span>
+                </div>
+                <button type="button" class="btn btn-primary w-100 py-2 mb-4 rounded-2"
+                onclick="register();">Create Account</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="./assets/libs/jquery/dist/jquery.min.js"></script>
+<script src="./assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="./assets/js/sweetalert"></script>
+<script type="text/javascript">
+  $(document).ready(function () {
+    $('#klmt').hide();
+
+    $('#profile-pic').on('change', function (event) {
+      handleFileInputChange(event);
+    });
+  });
+
+  function handleFileInputChange(event) {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+      $('#profile-pic-preview').attr('src', e.target.result);
+      var gmbr = $('#profile-pic');
+      if (gmbr !== null && gmbr !== undefined && gmbr !== '') {
+        $('#klmt').show();
+        $('.drop-area').css('border', 'none');
+        $('#profile-pic').css('height', '100%');
+      }
+    };
+
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function register() {
+    var fullname = $("#reg-fullname").val();
+    var email = $("#email").val();
+    var password = $("#password_rgs").val();
+    var re_pass = $("#re_pass").val();
+    var profilePic = $("#profile-pic")[0].files[0];
+
+
+    var act = "register";
+
+    if (fullname == '' || email == '' || password == '' || re_pass == '') {
+      Swal.fire({
+        position: 'center',
+        icon: 'warning',
+        title: 'All fields are required',
+        showConfirmButton: true,
+      });
+      return false;
+    }
+
+    if (password != re_pass) {
+      Swal.fire({
+        position: 'center',
+        icon: 'warning',
+        title: 'Passwords do not match',
+        showConfirmButton: true,
+      });
+      return false;
+    }
+
+    var form = $('#form-data')[0];
+    var formData = new FormData();
+    formData.append('act', act);
+    formData.append('fullname', fullname);
+    formData.append('email', email);
+    formData.append('password', re_pass);
+    formData.append('profile-pic', profilePic);
+
+    $.ajax({
+      url: "../server/ajax_register.php",
+      data: formData,
+      processData: false,
+      contentType: false,
+      type: 'POST',
+      success: function (res) {
+        if (res == "success") {
+          Swal.fire({
+            position: 'top',
+            icon: 'success',
+            title: 'Account successfully created',
+            showConfirmButton: false,
+            timer: 1500
+          }).then(() => {
+            window.location.href = "dashboard.php";
+          });
+        } else {
+          Swal.fire({
+            title: 'Oops..',
+            text: res,
+            icon: 'error'
+          })
+        }
+      }
+    });
+  }
+</script>
+</body>
+
+</html>
